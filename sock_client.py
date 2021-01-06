@@ -1,11 +1,21 @@
 import socket
 
-host = '127.0.0.1'
-port = 1024
 
-with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    s.connect((host, port))
-    s.send(b'')
-    data = s.recv(1024)
+class Client:
+    host = None
+    port = None
 
-print('received from server', repr(data))
+    def __init__(self, target_host, target_port):
+        self.host = target_host
+        self.port = target_port
+
+    def send_string(self, str_to_send):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.connect((self.host, self.port))
+            print('Awaiting server response ...')
+            s.sendall(bytes(str_to_send, encoding='utf8'))
+            data = s.recv(1024)
+            s.close()
+
+        print('Received from server', repr(data))
+        return data
