@@ -22,5 +22,3 @@ if __name__ == '__main__':
     print('Running. Press CTRL-C to exit.')
     while True:
         pass
-
-    server.stop()
