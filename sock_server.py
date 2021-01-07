@@ -22,36 +22,33 @@ class Server:
             if self.__server_stopped__:
                 break
 
-            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                s.bind(('0.0.0.0', self.port))
-                s.listen()
-                print(f'Server listening on port {self.port}')
-                conn, addr = s.accept()
-                try:
-                    with conn:
-                        print('connected => ', addr)
-                        while True:
-                            if self.__server_stopped__:
-                                break
-                            try:
-                                print('Awaiting incoming connection ...')
-                                data = conn.recv(1024)
-                                data = data.decode('utf8')
-                                client_host, client_port = conn.getpeername()
-                                print(client_host, client_port)
-                                if data == self.__close_sign__() and client_host == '127.0.0.1':
-                                    self.__server_stopped__ = True
-                                    print('Server shutdown command received')
-                                print(f'Received "{data}" from client')
-                                print('Sending back response')
-                                conn.sendall(b'OK')
-                            except Exception as e1:
-                                print(e1)
+            server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-                            conn.sendall(b'')
-                except Exception as e:
-                    print(e)
-                conn.close()
+            server.bind(('0.0.0.0', self.port))
+            server.listen()
+            print(f'Server listening on port {self.port}')
+            conn, addr = server.accept()
+            try:
+                print('connected => ', addr)
+                while True:
+                    if self.__server_stopped__:
+                        break
+                    try:
+                        print('Awaiting incoming connection ...')
+                        data = conn.recv(1024)
+                        data = data.decode('utf8')
+                        client_host, client_port = conn.getpeername()
+                        print(client_host, client_port)
+                        if data == self.__close_sign__() and client_host == '127.0.0.1':
+                            self.__server_stopped__ = True
+                            print('Server shutdown command received')
+                        print(f'Received "{data}" from client')
+                    except Exception as e1:
+                        print(e1)
+                    conn.send(b'OK')
+            except Exception as e:
+                print(e)
+            conn.close()
 
     def start(self):
         print(f'Starting server')

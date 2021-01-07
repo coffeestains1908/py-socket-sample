@@ -13,9 +13,9 @@ class Client:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.connect((self.host, self.port))
             print('Awaiting server response ...')
-            s.sendall(bytes(str_to_send, encoding='utf8'))
+            s.send(bytes(str_to_send, encoding='utf8'))
             data = s.recv(1024)
-            s.close()
+            s.detach()
 
         print('Received from server', repr(data))
         return data
